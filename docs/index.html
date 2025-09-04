@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Clicker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🐹 Кликер Web App</h1>
+    <div class="click-area" id="clickArea">
+        <img src="frames/frame1.png" id="clickImage">
+        <div class="click-progress" id="clickProgress"></div>
+    </div>
+
+    <div class="stats">
+        <p>Баланс: <span id="balance">0</span> 💰</p>
+        <p>Клик: <span id="clickPower">1</span></p>
+        <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
+        <p>Уровень клика: <span id="clickLevel">1</span></p>
+    </div>
+
+    <div class="shop">
+        <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
+        <button id="upgradePassive">Пассив (+1) — 20💰</button>
+    </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

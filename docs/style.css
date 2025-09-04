@@ -1,68 +1,9 @@
-body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(to bottom, #fceabb, #f8b500);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    text-align: center;
-    background: #fff5d7;
-    padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-}
-
-.click-area {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
-.click-area img {
-    width: 200px;
-    cursor: pointer;
-    transition: transform 0.1s;
-}
-
-.click-progress {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    height: 10px;
-    width: 0;
-    background: linear-gradient(to right, #ffb347, #ffcc70);
-    border-radius: 0 0 10px 10px;
-    transition: width 0.3s;
-}
-
-.shop button {
-    margin: 5px;
-    padding: 10px 20px;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    background: #ffb347;
-    transition: background 0.3s;
-}
-
-.shop button:hover {
-    background: #ffcc70;
-}
-
-/* Анимация прыжка */
-@keyframes jump {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0); }
-}
-
-/* Анимация моргания */
-@keyframes blink {
-    0%, 90%, 100% { opacity: 1; }
-    95% { opacity: 0; }
-}
+body { font-family: Arial; background: linear-gradient(to bottom, #fceabb, #f8b500); display:flex; justify-content:center; align-items:center; height:100vh; margin:0; }
+.container { text-align:center; background:#fff5d7; padding:20px; border-radius:20px; box-shadow:0 8px 15px rgba(0,0,0,0.2); }
+.click-area { position:relative; display:inline-block; margin-bottom:20px; }
+.click-area img { width:200px; cursor:pointer; transition: transform 0.1s; }
+.click-progress { position:absolute; bottom:0; left:0; height:10px; width:0; background:linear-gradient(to right, #ffb347, #ffcc70); border-radius:0 0 10px 10px; transition: width 0.3s; }
+.shop button { margin:5px; padding:10px 20px; font-size:16px; border-radius:10px; border:none; cursor:pointer; background:#ffb347; transition:background 0.3s; }
+.shop button:hover { background:#ffcc70; }
+@keyframes jump { 0%{transform:translateY(0);}50%{transform:translateY(-20px);}100%{transform:translateY(0);} }
+@keyframes blink { 0%,90%,100%{opacity:1;}95%{opacity:0;} }

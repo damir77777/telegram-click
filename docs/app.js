@@ -1,7 +1,7 @@
-// Инициализация Telegram Web App
+// Подключение к Telegram Web App
 const tg = window.Telegram.WebApp;
-tg.expand();
 
+// Статистика пользователя
 let balance = 0;
 let clickPower = 1;
 let passiveIncome = 1;
@@ -9,40 +9,37 @@ let clickLevel = 1;
 let clickXP = 0;
 const xpPerLevel = 50;
 
-// Элементы
 const balanceEl = document.getElementById('balance');
 const clickPowerEl = document.getElementById('clickPower');
 const passiveIncomeEl = document.getElementById('passiveIncome');
 const clickLevelEl = document.getElementById('clickLevel');
 const clickImage = document.getElementById('clickImage');
 const clickProgressEl = document.getElementById('clickProgress');
-const topListEl = document.getElementById('topList');
+const leaderboardEl = document.getElementById('leaderboard');
 
 const frames = ["frames/frame1.png","frames/frame2.png","frames/frame3.png"];
 let frameIndex = 0;
 
-// Моргание
-setInterval(() => {
-    clickImage.style.animation = "blink 0.2s";
-    setTimeout(() => clickImage.style.animation = "", 200);
-}, 3000);
-
-// Обновление статистики
-function updateStats() {
+// Обновление UI
+function updateStats(){
     balanceEl.textContent = balance;
     clickPowerEl.textContent = clickPower;
     passiveIncomeEl.textContent = passiveIncome;
     clickLevelEl.textContent = clickLevel;
-    updateClickProgress();
 }
 
-// Прогресс клика
 function updateClickProgress() {
     const progress = Math.min((clickXP / xpPerLevel) * 100, 100);
     clickProgressEl.style.width = progress + '%';
+    if(clickXP >= xpPerLevel){
+        clickLevel++;
+        clickXP -= xpPerLevel;
+        clickPower += 1;
+        updateStats();
+        animateLevelUp();
+    }
 }
 
-// Анимация уровня
 function animateLevelUp() {
     clickImage.style.transform = "scale(1.2)";
     clickImage.style.animation = "jump 0.3s";
@@ -52,9 +49,16 @@ function animateLevelUp() {
     }, 300);
 }
 
-// Отправка данных боту
-function sendDataToBot(data) {
-    tg.sendData(JSON.stringify(data));
+// Отправка данных в бота
+function sendDataToBot(data){
+    if(tg) {
+        tg.sendData(JSON.stringify(data));
+    }
+}
+
+// Загрузка прогресса при открытии
+function loadProgress() {
+    sendDataToBot({action: "get_stats"});
 }
 
 // Клик по картинке
@@ -62,14 +66,8 @@ clickImage.addEventListener('click', () => {
     balance += clickPower;
     clickXP += clickPower;
 
-    if (clickXP >= xpPerLevel) {
-        clickLevel++;
-        clickXP -= xpPerLevel;
-        clickPower++;
-        animateLevelUp();
-    }
-
     updateStats();
+    updateClickProgress();
 
     frameIndex = (frameIndex + 1) % frames.length;
     clickImage.src = frames[frameIndex];
@@ -106,18 +104,36 @@ setInterval(() => {
     sendDataToBot({action: "passiveIncome", balance, passiveIncome});
 }, 60000);
 
-// --- Запрос текущих данных у бота при загрузке ---
-tg.onEvent('mainButtonClicked', () => {
-    sendDataToBot({action: "get_stats"});
-});
-
-// Обновление топ-5 (через callback из бота)
-function updateTopList(topArray) {
-    topListEl.innerHTML = "";
-    const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
-    topArray.forEach((user, i) => {
-        const li = document.createElement('li');
-        li.textContent = `${medals[i]} ${user.username} — ${user.balance} 💰`;
-        topListEl.appendChild(li);
+// Обновление таблицы лидеров в Web App
+function updateLeaderboard(users){
+    leaderboardEl.innerHTML = "<h3>🏆 Топ игроков</h3>";
+    users.forEach((user, i) => {
+        const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i+1}️⃣`;
+        const el = document.createElement('p');
+        el.textContent = `${medal} ${user.name} — ${user.balance} 💰`;
+        leaderboardEl.appendChild(el);
     });
 }
+
+// Получение прогресса и топа от бота
+tg.onEvent('data', (msg) => {
+    try {
+        const data = JSON.parse(msg);
+        if(data.type === "stats"){
+            balance = data.balance;
+            clickPower = data.clickPower;
+            passiveIncome = data.passiveIncome;
+            clickLevel = data.clickLevel;
+            clickXP = data.clickXP;
+            updateStats();
+            updateClickProgress();
+        } else if(data.type === "top"){
+            updateLeaderboard(data.top);
+        }
+    } catch(e) {
+        console.error(e);
+    }
+});
+
+// Загрузка прогресса при открытии
+loadProgress();

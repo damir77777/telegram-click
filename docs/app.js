@@ -17,7 +17,7 @@ const clickImage = document.getElementById('clickImage');
 const clickProgressEl = document.getElementById('clickProgress');
 const leaderboardEl = document.getElementById('leaderboard');
 
-const frames = [,"frames/frame2.png","frames/frame3.png"];
+const frames = ["frames/frame2.png","frames/frame3.png"];
 let frameIndex = 0;
 
 // Обновление UI
@@ -137,4 +137,5 @@ tg.onEvent('data', (msg) => {
 
 // Загрузка прогресса при открытии
 loadProgress();
+
 

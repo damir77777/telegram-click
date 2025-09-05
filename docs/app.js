@@ -1,3 +1,4 @@
+// --- Элементы DOM ---
 const balanceEl = document.getElementById('balance');
 const clickPowerEl = document.getElementById('clickPower');
 const passiveIncomeEl = document.getElementById('passiveIncome');
@@ -6,12 +7,12 @@ const clickImage = document.getElementById('clickImage');
 const clickProgressEl = document.getElementById('clickProgress');
 const leaderboardEl = document.getElementById('leaderboard');
 
-let balance = 0, clickPower = 1, passiveIncome = 1, clickLevel = 1, clickXP = 0;
-
-// --- Получаем данные из бота при загрузке ---
-if(window.Telegram.WebApp){
-    window.Telegram.WebApp.sendData(JSON.stringify({action:"get_stats"}));
-}
+// --- Переменные ---
+let balance = 0;
+let clickPower = 1;
+let passiveIncome = 1;
+let clickLevel = 1;
+let clickXP = 0;
 
 // --- Обновляем статистику ---
 function updateStats() {
@@ -19,22 +20,37 @@ function updateStats() {
     clickPowerEl.textContent = clickPower;
     passiveIncomeEl.textContent = passiveIncome;
     clickLevelEl.textContent = clickLevel;
-    clickProgressEl.style.width = Math.min((clickXP/50)*100, 100) + "%";
+    clickProgressEl.style.width = Math.min((clickXP / 50) * 100, 100) + "%";
 }
 
-// --- Отправка данных в бот ---
+// --- Отправка данных в бота ---
 function sendDataToBot(data){
     if(window.Telegram.WebApp){
         window.Telegram.WebApp.sendData(JSON.stringify(data));
     }
 }
 
+// --- Инициализация: получаем текущие данные игрока ---
+if(window.Telegram.WebApp){
+    sendDataToBot({action: "get_stats"});
+    sendDataToBot({action: "get_leaderboard"});
+}
+
 // --- Клик по картинке ---
 clickImage.addEventListener('click', () => {
     balance += clickPower;
     clickXP += clickPower;
+
+    // Левел ап
+    if(clickXP >= 50){
+        clickLevel++;
+        clickXP = 0;
+        clickPower += 1;
+    }
+
     updateStats();
-    sendDataToBot({action:"click", balance, clickPower, clickLevel, passiveIncome});
+    sendDataToBot({action:"click", balance, clickPower, clickLevel, clickXP, passiveIncome});
+    sendDataToBot({action:"get_leaderboard"}); // обновляем топ после клика
 });
 
 // --- Кнопки апгрейдов ---
@@ -44,6 +60,7 @@ document.getElementById('upgradeClick').addEventListener('click', () => {
         clickPower += 1;
         updateStats();
         sendDataToBot({action:"upgradeClick", balance, clickPower});
+        sendDataToBot({action:"get_leaderboard"});
     }
 });
 
@@ -53,20 +70,24 @@ document.getElementById('upgradePassive').addEventListener('click', () => {
         passiveIncome += 1;
         updateStats();
         sendDataToBot({action:"upgradePassive", balance, passiveIncome});
+        sendDataToBot({action:"get_leaderboard"});
     }
 });
 
-// --- Пассивный доход ---
+// --- Пассивный доход каждые 60 секунд ---
 setInterval(() => {
     balance += passiveIncome;
     updateStats();
     sendDataToBot({action:"passiveIncome", balance, passiveIncome});
+    sendDataToBot({action:"get_leaderboard"});
 }, 60000);
 
-// --- Получение ответа от бота ---
+// --- Получение ответов от бота ---
 window.addEventListener('message', (event) => {
     try{
         const data = JSON.parse(event.data);
+
+        // Обновляем данные игрока
         if(data.balance !== undefined){
             balance = data.balance;
             clickPower = data.clickPower;
@@ -75,13 +96,19 @@ window.addEventListener('message', (event) => {
             clickXP = data.clickXP;
             updateStats();
         }
+
+        // Обновляем таблицу лидеров
         if(data.leaderboard){
             leaderboardEl.innerHTML = '';
             data.leaderboard.forEach((u, i) => {
                 const li = document.createElement('li');
-                li.textContent = `${u.name} — ${u.balance} 💰`;
+                const medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"];
+                li.textContent = `${medals[i] ? medals[i] : i+1} ${u.name} — ${u.balance} 💰`;
                 leaderboardEl.appendChild(li);
             });
         }
-    }catch(e){}
+
+    }catch(e){
+        console.error(e);
+    }
 });

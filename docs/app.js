@@ -25,6 +25,7 @@ function updateLeaderboard(users){
     });
 }
 
+// Отправка данных на бота
 function sendData(action, extra={}){
     const payload = {action, ...extra};
     if(window.Telegram && window.Telegram.WebApp){
@@ -32,10 +33,10 @@ function sendData(action, extra={}){
     }
 }
 
-// --- Обработка ответов от бота ---
-window.Telegram.WebApp.onEvent('data', data => {
+// Обработка ответов от бота
+function handleBotMessage(text){
     try{
-        const obj = JSON.parse(data);
+        const obj = JSON.parse(text);
         if(obj.balance !== undefined){
             balance = obj.balance;
             clickPower = obj.clickPower;
@@ -47,7 +48,16 @@ window.Telegram.WebApp.onEvent('data', data => {
         if(obj.leaderboard){
             updateLeaderboard(obj.leaderboard);
         }
-    }catch(e){ console.error(e); }
+    }catch(e){
+        console.error("Ошибка обработки ответа бота:", e);
+    }
+}
+
+// Ловим все новые сообщения от бота
+window.Telegram.WebApp.onEvent('message', msg => {
+    if(msg.text){
+        handleBotMessage(msg.text);
+    }
 });
 
 // --- Клик по картинке ---
@@ -83,8 +93,7 @@ setInterval(()=>{
     sendData("passiveIncome",{balance, passiveIncome});
 }, 60000);
 
-// --- Инициализация ---
+// --- Инициализация при открытии ---
 window.addEventListener('load', ()=>{
     sendData("get_stats");
 });
-

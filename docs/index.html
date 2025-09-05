@@ -4,27 +4,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Telegram Clicker</title>
-
+<style>
+body { font-family: Arial, sans-serif; padding: 20px; }
+.container { max-width: 500px; margin: auto; }
+.click-area { position: relative; text-align: center; margin-bottom: 20px; }
+.click-progress { position: absolute; bottom: 0; left: 0; height: 5px; background: green; width: 0%; }
+.stats p { margin: 5px 0; }
+.shop button { margin: 5px; padding: 10px; }
+</style>
 </head>
 <body>
 <div class="container">
 <h1>🐹 Кликер Web App</h1>
+
 <div class="click-area">
-    <img src="frames/frame.png" id="clickImage">
+    <img src="frames/frame.png" id="clickImage" style="width:100%; cursor:pointer;">
     <div class="click-progress" id="clickProgress"></div>
 </div>
+
 <div class="stats">
     <p>Баланс: <span id="balance">0</span> 💰</p>
     <p>Клик: <span id="clickPower">1</span></p>
     <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
     <p>Уровень клика: <span id="clickLevel">1</span></p>
 </div>
+
 <div class="shop">
     <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
     <button id="upgradePassive">Пассив (+1) — 20💰</button>
 </div>
-<h2>Топ-5 игроков</h2>
+
+<h2>🏆 Топ-5 игроков</h2>
 <ol id="leaderboard"></ol>
+
 <script src="app.js"></script>
 </div>
 </body>

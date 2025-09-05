@@ -1,14 +1,13 @@
+// app.js
 const balanceEl = document.getElementById('balance');
 const clickPowerEl = document.getElementById('clickPower');
 const passiveIncomeEl = document.getElementById('passiveIncome');
 const clickLevelEl = document.getElementById('clickLevel');
-const clickXPEl = document.getElementById('clickProgress');
+const clickImage = document.getElementById('clickImage');
+const clickProgressEl = document.getElementById('clickProgress');
 const leaderboardEl = document.getElementById('leaderboard');
 
 let balance = 0, clickPower = 1, passiveIncome = 1, clickLevel = 1, clickXP = 0;
-const tg = window.Telegram.WebApp;
-const tg_id = tg.initDataUnsafe.user.id;
-const name = tg.initDataUnsafe.user.first_name + " " + (tg.initDataUnsafe.user.last_name||"");
 
 // --- Обновление UI ---
 function updateStats() {
@@ -16,67 +15,73 @@ function updateStats() {
     clickPowerEl.textContent = clickPower;
     passiveIncomeEl.textContent = passiveIncome;
     clickLevelEl.textContent = clickLevel;
-    clickXPEl.style.width = Math.min((clickXP/50)*100,100)+"%";
+    clickProgressEl.style.width = Math.min((clickXP/50)*100,100) + "%";
 }
 
-// --- Отправка запроса серверу ---
-async function sendData(data){
-    data.tg_id = tg_id;
-    data.name = name;
-    const res = await fetch("https://your-server.com/update", {
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body: JSON.stringify(data)
-    });
-    const json = await res.json();
-    balance = json.balance;
-    clickPower = json.clickPower;
-    passiveIncome = json.passiveIncome;
-    clickLevel = json.clickLevel;
-    clickXP = json.clickXP;
-    updateStats();
-
-    leaderboardEl.innerHTML="";
-    json.leaderboard.forEach(u=>{
-        const li = document.createElement("li");
-        li.textContent = `${u.name} — ${u.balance} 💰`;
-        leaderboardEl.appendChild(li);
+// --- Отправка данных на сервер ---
+function sendData(action, extra={}) {
+    const payload = { action, ...extra };
+    if(window.Telegram && window.Telegram.WebApp){
+        payload.tg_id = window.Telegram.WebApp.initDataUnsafe.user.id;
+        payload.name = window.Telegram.WebApp.initDataUnsafe.user.first_name;
+    }
+    fetch("http://127.0.0.1:5000/webapp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    }).then(r=>r.json()).then(data=>{
+        if(data.balance!==undefined){
+            balance = data.balance;
+            clickPower = data.clickPower;
+            passiveIncome = data.passiveIncome;
+            clickLevel = data.clickLevel;
+            clickXP = data.clickXP;
+            updateStats();
+        }
+        if(data.leaderboard){
+            leaderboardEl.innerHTML = "";
+            data.leaderboard.forEach(u=>{
+                const li = document.createElement('li');
+                li.textContent = `${u.name} — ${u.balance} 💰`;
+                leaderboardEl.appendChild(li);
+            });
+        }
     });
 }
 
 // --- Клик по картинке ---
-document.getElementById("clickImage").addEventListener("click", ()=>{
+clickImage.addEventListener('click', ()=>{
     balance += clickPower;
     clickXP += clickPower;
     updateStats();
-    sendData({action:"click", balance, clickPower, clickLevel, passiveIncome});
+    sendData("click", {balance, clickPower, clickLevel, passiveIncome});
 });
 
 // --- Апгрейды ---
-document.getElementById("upgradeClick").addEventListener("click", ()=>{
-    if(balance >= 10){
+document.getElementById('upgradeClick').addEventListener('click', ()=>{
+    if(balance>=10){
         balance -= 10;
         clickPower += 1;
         updateStats();
-        sendData({action:"upgradeClick", balance, clickPower});
+        sendData("upgradeClick",{balance, clickPower});
     }
 });
-document.getElementById("upgradePassive").addEventListener("click", ()=>{
-    if(balance >= 20){
+document.getElementById('upgradePassive').addEventListener('click', ()=>{
+    if(balance>=20){
         balance -= 20;
-        passiveIncome += 1;
+        passiveIncome +=1;
         updateStats();
-        sendData({action:"upgradePassive", balance, passiveIncome});
+        sendData("upgradePassive",{balance, passiveIncome});
     }
 });
 
-// --- Пассивный доход каждые 60 сек ---
+// --- Пассивный доход ---
 setInterval(()=>{
     balance += passiveIncome;
     updateStats();
-    sendData({action:"passiveIncome", balance, passiveIncome});
-},60000);
+    sendData("passiveIncome",{balance, passiveIncome});
+}, 60000);
 
-// --- Начальные данные ---
-sendData({action:"get_stats"});
-sendData({action:"get_leaderboard"});
+// --- Запрос статистики и топ-5 при открытии ---
+sendData("get_stats");
+sendData("get_leaderboard");

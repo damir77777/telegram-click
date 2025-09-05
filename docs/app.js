@@ -64,7 +64,7 @@ const clickImage = document.getElementById('clickImage');
 const clickProgressEl = document.getElementById('clickProgress');
 const leaderboardEl = document.getElementById('leaderboard');
 
-const frames = ["frames/frame1.png","frames/frame2.png","frames/frame3.png"];
+const frames = ["frames/frame.png"];
 let frameIndex = 0;
 
 // ========== ОТРИСОВКА ==========
@@ -193,3 +193,4 @@ setInterval(() => animateBlink(clickImage), 3000);
 // стартовый рендер
 updateStats();
 renderTopFromUrl();
+

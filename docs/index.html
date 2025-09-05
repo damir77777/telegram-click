@@ -4,32 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Telegram Clicker</title>
-<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 <div class="container">
-    <h1>🐹 Кликер Web App</h1>
-    <div class="click-area">
-        <img src="frames/frame.png" id="clickImage">
-        <div class="click-progress" id="clickProgress"></div>
-    </div>
-
-    <div class="stats">
-        <p>Баланс: <span id="balance">0</span> 💰</p>
-        <p>Клик: <span id="clickPower">1</span></p>
-        <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
-        <p>Уровень клика: <span id="clickLevel">1</span></p>
-    </div>
-
-    <div class="shop">
-        <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
-        <button id="upgradePassive">Пассив (+1) — 20💰</button>
-    </div>
-
-    <h2>Топ-5 игроков</h2>
-    <ol id="leaderboard"></ol>
+<h1>🐹 Кликер Web App</h1>
+<div class="click-area">
+    <img src="frames/frame.png" id="clickImage">
+    <div class="click-progress" id="clickProgress"></div>
 </div>
+<div class="stats">
+    <p>Баланс: <span id="balance">0</span> 💰</p>
+    <p>Клик: <span id="clickPower">1</span></p>
+    <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
+    <p>Уровень клика: <span id="clickLevel">1</span></p>
+</div>
+<div class="shop">
+    <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
+    <button id="upgradePassive">Пассив (+1) — 20💰</button>
+</div>
+<h2>Топ-5 игроков</h2>
+<ol id="leaderboard"></ol>
 <script src="app.js"></script>
+</div>
 </body>
 </html>
-

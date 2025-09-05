@@ -25,7 +25,7 @@ function updateLeaderboard(users){
     });
 }
 
-// Отправка данных на бота
+// Отправка данных Web App с query_id
 function sendData(action, extra={}){
     const payload = {action, ...extra};
     if(window.Telegram && window.Telegram.WebApp){
@@ -33,7 +33,7 @@ function sendData(action, extra={}){
     }
 }
 
-// Обработка ответов от бота
+// Обработка ответа бота (answerWebAppQuery)
 function handleBotMessage(text){
     try{
         const obj = JSON.parse(text);
@@ -48,52 +48,28 @@ function handleBotMessage(text){
         if(obj.leaderboard){
             updateLeaderboard(obj.leaderboard);
         }
-    }catch(e){
-        console.error("Ошибка обработки ответа бота:", e);
-    }
+    }catch(e){ console.error(e); }
 }
 
-// Ловим все новые сообщения от бота
-window.Telegram.WebApp.onEvent('message', msg => {
-    if(msg.text){
-        handleBotMessage(msg.text);
-    }
-});
-
-// --- Клик по картинке ---
+// Клик
 clickImage.addEventListener('click', ()=>{
-    balance += clickPower;
-    clickXP += clickPower;
-    updateStats();
     sendData("click",{balance, clickPower, clickLevel, passiveIncome});
 });
 
-// --- Апгрейды ---
+// Апгрейды
 document.getElementById('upgradeClick').addEventListener('click', ()=>{
-    if(balance>=10){
-        balance -= 10;
-        clickPower += 1;
-        updateStats();
-        sendData("upgradeClick",{balance, clickPower});
-    }
+    sendData("upgradeClick",{balance, clickPower});
 });
 document.getElementById('upgradePassive').addEventListener('click', ()=>{
-    if(balance>=20){
-        balance -= 20;
-        passiveIncome +=1;
-        updateStats();
-        sendData("upgradePassive",{balance, passiveIncome});
-    }
+    sendData("upgradePassive",{balance, passiveIncome});
 });
 
-// --- Пассивный доход ---
+// Пассивный доход
 setInterval(()=>{
-    balance += passiveIncome;
-    updateStats();
     sendData("passiveIncome",{balance, passiveIncome});
 }, 60000);
 
-// --- Инициализация при открытии ---
+// Обновление Web App при загрузке
 window.addEventListener('load', ()=>{
     sendData("get_stats");
 });

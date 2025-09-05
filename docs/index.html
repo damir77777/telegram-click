@@ -1,43 +1,34 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Telegram Clicker</title>
-  <link rel="stylesheet" href="style.css">
-  <!-- Telegram WebApp API -->
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telegram Clicker</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+<div class="container">
     <h1>🐹 Кликер Web App</h1>
-
-    <!-- зона кликов -->
     <div class="click-area">
-      <img src="frames/frame1.png" id="clickImage" alt="Кликни меня">
-      <div class="click-progress" id="clickProgress"></div>
+        <img src="frames/frame.png" id="clickImage">
+        <div class="click-progress" id="clickProgress"></div>
     </div>
 
-    <!-- статистика -->
     <div class="stats">
-      <p>Баланс: <span id="balance">0</span> 💰</p>
-      <p>Клик: <span id="clickPower">1</span></p>
-      <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
-      <p>Уровень клика: <span id="clickLevel">1</span></p>
+        <p>Баланс: <span id="balance">0</span> 💰</p>
+        <p>Клик: <span id="clickPower">1</span></p>
+        <p>Пассивный доход: <span id="passiveIncome">1</span>/мин</p>
+        <p>Уровень клика: <span id="clickLevel">1</span></p>
     </div>
 
-    <!-- магазин -->
     <div class="shop">
-      <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
-      <button id="upgradePassive">Пассив (+1) — 20💰</button>
+        <button id="upgradeClick">Улучшить клик (+1) — 10💰</button>
+        <button id="upgradePassive">Пассив (+1) — 20💰</button>
     </div>
 
-    <!-- таблица лидеров -->
-    <h2>🏆 Топ игроков</h2>
+    <h2>Топ игроков</h2>
     <ol id="leaderboard"></ol>
-  </div>
-
-  <!-- подключаем JS -->
-  <script src="app.js"></script>
+</div>
+<script src="app.js"></script>
 </body>
 </html>
